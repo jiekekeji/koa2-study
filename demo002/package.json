@@ -1,0 +1,19 @@
+{
+  "name": "demo002",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "glob": "^7.1.3",
+    "koa": "^2.5.3",
+    "koa-compose": "^4.1.0",
+    "koa-router": "^7.4.0",
+    "path": "^0.12.7"
+  }
+}
