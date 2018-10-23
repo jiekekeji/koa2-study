@@ -1,6 +1,7 @@
 ## 路由中间件 koa-router 请求参数获取
 
-###一、获取GET方式传递的参数:
+### 一、获取GET方式传递的参数:
+
 1、普通方式传参数，
 
    路径如:http://localhost:8080/index?username=jack&id=123212&aihao=篮球&aihao=足球
@@ -34,7 +35,7 @@ router.get('/user/:id/:username',(ctx, next)=>{
 ```
  id: '123132', username: 'jack' }
 ```
-###二、获取POST方式传递的参数:
+### 二、获取POST方式传递的参数:
 安装koa-bodyparser中间件
 ```
 cnpm install --save koa-bodyparser
