@@ -2,7 +2,7 @@
 
 ### 一、获取GET方式传递的参数:
 
-1、普通方式传参数，
+#### 1、普通方式传参数，
 
    路径如:http://localhost:8080/index?username=jack&id=123212&aihao=篮球&aihao=足球
    
@@ -19,7 +19,7 @@ router.get('/',(ctx, next)=>{
 { username: 'jack', id: '123212', aihao: [ '篮球', '足球' ] }
 ```
 
-2、获取动态路由参数，
+#### 2、获取动态路由参数，
 
 路径如:http://localhost:8080/index/user/123132/jack
 
@@ -58,7 +58,7 @@ app.use(registerRouter())
 app.listen(8080)
 console.log("demo in run")
 ```
-1、获取post提交的参数，键值对方式
+#### 1、获取post提交的参数，键值对方式
 ```
 router.post('/add',(ctx, next)=>{
     let query =  ctx.request.body;
@@ -68,7 +68,7 @@ router.post('/add',(ctx, next)=>{
 ```
 ![Image text](https://github.com/jiekekeji/koa2-study/blob/master/demo003/readme/0031.png?raw=true)
 
-2、获取post提交的参数，json字符串方式
+#### 2、获取post提交的参数，json字符串方式
 ```
 router.post('/add',(ctx, next)=>{
     let query =  ctx.request.body;
@@ -79,3 +79,18 @@ router.post('/add',(ctx, next)=>{
 ![Image text](https://github.com/jiekekeji/koa2-study/blob/master/demo003/readme/0032.png?raw=true)
 
 ### 三、上传文件
+
+安装中间件:
+```
+npm install koa-body --save
+```
+在app.js中引入中间件
+```
+const koaBody = require('koa-body');
+app.use(koaBody({
+    multipart: true,
+    formidable: {
+        maxFileSize: 200*1024*1024    // 设置上传文件大小最大限制，默认2M
+    }
+}));
+```
