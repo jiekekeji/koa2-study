@@ -66,7 +66,7 @@ router.post('/add',(ctx, next)=>{
     ctx.body = "query=" + JSON.stringify(query);
 })
 ```
-![Image text](https://raw.githubusercontent.com/hongmaju/light7Local/master/img/productShow/20170518152848.png)
+![Image text](https://github.com/jiekekeji/koa2-study/blob/master/demo003/readme/0031.png?raw=true)
 
 2、获取post提交的参数，json字符串方式
 ```
@@ -76,6 +76,6 @@ router.post('/add',(ctx, next)=>{
     ctx.body = "query=" + JSON.stringify(query);
 })
 ```
-![Image text](https://raw.githubusercontent.com/hongmaju/light7Local/master/img/productShow/20170518152848.png)
+![Image text](https://github.com/jiekekeji/koa2-study/blob/master/demo003/readme/0032.png?raw=true)
 
-###三、上传文件
+### 三、上传文件
