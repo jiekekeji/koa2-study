@@ -1,105 +1,55 @@
-## 路由中间件 koa-router 的使用
+## node-xlsx 实现excel(xlsx)导入和导出
 
-一、安装路由
+#### 一、安装node-xlsx
 ```
-cnpm install koa-router --save
-```
-
-二、简单使用，在index.js文件中使用
-```
-const Koa = require('koa')
-const app = new Koa()
-// 1、引入 这里router是函数
-const router = require('koa-router')()
-
-//2、添加路由
-router.get('/', async (ctx, next) => {
-    ctx.response.body = '<h1>index page</h1>'
-})
-
-router.get('/home', async (ctx, next) => {
-    ctx.response.body = '<h1>HOME page</h1>'
-})
-
-router.get('/404', async (ctx, next) => {
-    ctx.response.body = '<h1>404 Not Found</h1>'
-})
-
-// 3、调用路由中间件
-app.use(router.routes())
-
-app.listen(8080, ()=>{
-    console.log('server is running at http://localhost:8080')
-})
+cnpm install node-xlsx --save
 ```
 
-三、拆分路由。为了便于管理将路由拆分为多个文件。
-
-1、安装glob、path、koa-compose模块:
+### 二、导入excel(xlsx),导入还需要中间件 koa-body，接收导入的文件并解析:
 ```
-cnpm install path glob koa-compose --save
-```
-2、新建routers目录，在routers目录下新建index.js,代码如下:
-```
-const compose = require('koa-compose')
-const glob = require('glob')
-const { resolve } = require('path')
-
-registerRouter = () => {
-    let routers = [];
-    // 将 与 routes同级目录controller下的.js文件解析为路由文件
-    glob.sync(resolve(__dirname,  '../controller', '**/*.js')).map(router => {
-            routers.push(require(router).routes())
-            routers.push(require(router).allowedMethods())
+router.post('/excelin',(ctx,next)=>{
+    try{
+        const file = ctx.request.files.file; // 获取上传文件
+        const workSheetsFromBuffer = xlsx.parse(fs.readFileSync(file.path));
+        workSheetsFromBuffer.forEach((item)=>{
+            item.data.forEach((row)=>{
+                console.log(row)
+            })
         })
-    return compose(routers)
-}
-
-module.exports = registerRouter
-```
-将 与 routes同级目录controller下的.js文件解析为路由文件。
-3、在controller目录下新建user.js,代码如下:
-```
-const Router = require('koa-router')
-const path = require('path')
-const router = new Router()
-
-// 该路由将文件名作为路由的前缀，如这里将user作为前缀
-let prefix = path.basename(__filename)
-router.prefix('/' + prefix.substring(0, prefix.indexOf('.')))
-
-// 访问路径 http://localhost:1996/user/login
-router.get('/login',(ctx,next)=>{
-    ctx.body = "login"
+        return ctx.body = "上传成功！";
+    }catch (e) {
+        return ctx.body = "上传失败！" + e;
+    }
 })
-
-router.get('/register',(ctx,next)=>{
-    ctx.body = "register"
-})
-
-module.exports = router
 ```
-访问路径为:http://localhost:8080/user/login,http://localhost:8080/user/register
-
-4、在controller目录下新建mall目录，新建order.js文件，代码如下:
+前端上传代码:
 ```
-const Router = require('koa-router')
-const path = require('path')
-const router = new Router()
-
-// 该路由将文件名作为路由的前缀
-let prefix = path.basename(__filename)
-router.prefix('/' + prefix.substring(0, prefix.indexOf('.')))
-
-router.get('/query',(ctx,next)=>{
-    ctx.body = "query"
-})
-
-router.get('/delete',(ctx,next)=>{
-    ctx.body = "delete"
-})
-
-module.exports = router
-
+<form action="/api/user/excelin" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" value="" multiple="multiple"/>
+    <input type="submit" value="提交"/>
+</form>
 ```
-访问路径为:http://localhost:8080/order/query,http://localhost:8080/order/delete
+
+### 三、简单的导出：
+```
+router.get('/excelout1',(ctx,next)=>{
+    const data = [[1, 2, 3], [true, false, null, 'sheetjs'], ['foo', 'bar', new Date('2014-02-19T14:30Z'), '0.3'], ['baz', null, 'qux']];
+    const buffer = xlsx.build([{name: "mySheetName", data: data}]);
+    ctx.set('Content-Type','text/javascript;charset=UTF-8');
+    ctx.set('Content-disposition','attachment;filename='+encodeURIComponent('20181010订单报表.xlsx'));
+    ctx.body = buffer
+})
+```
+### 四、有单元格合并等的导出：
+```
+router.get('/excelout2',(ctx,next)=>{
+    const data = [[1, 2, 3], [true, false, null, 'sheetjs'], ['foo', 'bar', new Date('2014-02-19T14:30Z'), '0.3'], ['baz', null, 'qux']];
+    const range = {s: {c: 0, r:0 }, e: {c:0, r:3}}; // A1:A4
+    const option = {'!merges': [ range ]};
+
+    const buffer = xlsx.build([{name: "mySheetName", data: data}], option);
+    ctx.set('Content-Type','text/javascript;charset=UTF-8');
+    ctx.set('Content-disposition','attachment;filename='+encodeURIComponent('20181010订单报表.xlsx'));
+    ctx.body = buffer
+})
+```
