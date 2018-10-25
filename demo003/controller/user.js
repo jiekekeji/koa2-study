@@ -12,6 +12,7 @@ router.get('/query',(ctx, next)=>{
     console.log(query);
     ctx.body = "query=" + JSON.stringify(query);
 })
+
 //获取动态路由参数
 router.get('/query/:id/:username',(ctx, next)=>{
     let query =  ctx.params;
