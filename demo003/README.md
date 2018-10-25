@@ -1,4 +1,4 @@
-## 路由中间件 koa-router 请求参数获取
+## 路由中间件 koa-router和koa-body 获取请求参数
 
 ### 一、获取GET方式传递的参数:
 
