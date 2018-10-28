@@ -22,8 +22,7 @@ router.get('/query/:id/:username',(ctx, next)=>{
 
 // 获取post提交的参数，键值对方式
 router.post('/add',(ctx, next)=>{
-    let query =  ctx;
-    console.log(query.req);
+    let query =  ctx.request.body;
     ctx.body = 'query' + JSON.stringify(ctx.request.body);
 })
 

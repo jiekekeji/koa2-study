@@ -60,8 +60,7 @@ router.get('/query/:id/:username',(ctx, next)=>{
 ###### 1、参数以键值对key-value形式传递，获取参数方式:
 ```
 router.post('/add',(ctx, next)=>{
-    let query =  ctx;
-    console.log(query.req);
+    let query =  ctx.request.body;
     ctx.body = 'query' + JSON.stringify(ctx.request.body);
 })
 ```
