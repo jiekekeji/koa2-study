@@ -54,7 +54,23 @@ router.post('/update', async (ctx, next) => {
 
 router.get('/findAll', async (ctx, next) => {
     try {
+        // 查询全部字段
         let result = await User.findAll()
+        ctx.body = '查询成功:' + JSON.stringify(result)
+    } catch (errors) {
+        console.log('errors', errors)
+        ctx.body = '查询失败:' + JSON.stringify(errors)
+    }
+})
+router.get('/findAllSome', async (ctx, next) => {
+    try {
+        // 只查询username，age字段
+        let result = await User.findAll({
+            attributes: ['username', 'age'],
+            where: {
+                id: 5
+            }
+        })
         ctx.body = '查询成功:' + JSON.stringify(result)
     } catch (errors) {
         console.log('errors', errors)

@@ -1,105 +1,115 @@
-## ORM 之 Sequelize
+## ORM 之 Sequelize 简单增删查改
 
 一、安装路由
 ```
-cnpm install koa-router --save
+cnpm install sequelize --save
 ```
 
-二、简单使用，在index.js文件中使用
+二、模型定义
 ```
-const Koa = require('koa')
-const app = new Koa()
-// 1、引入 这里router是函数
-const router = require('koa-router')()
+const Sequelize = require('sequelize');
+const helper = require('./helper/helper');
 
-//2、添加路由
-router.get('/', async (ctx, next) => {
-    ctx.response.body = '<h1>index page</h1>'
+const User = helper().define('user', {
+    username: {
+        type: Sequelize.STRING,
+        allowNull: false, // 不能为空
+        unique: true //唯一性
+    },
+    password: {
+        type: Sequelize.STRING,
+        allowNull: false, // 不能为空
+    },
+    age: {
+        type: Sequelize.INTEGER
+    }
+
+});
+User.sync();
+module.exports = User
+```
+
+三、增
+```
+router.post('/insert', async (ctx, next) => {
+    let user = ctx.request.body
+    try {
+        let result = await User.create(user)
+        ctx.body = '插入成功:' + JSON.stringify(result)
+    } catch (errors) {
+        console.log('errors', errors)
+        ctx.body = '插入失败:' + JSON.stringify(errors)
+    }
 })
-
-router.get('/home', async (ctx, next) => {
-    ctx.response.body = '<h1>HOME page</h1>'
-})
-
-router.get('/404', async (ctx, next) => {
-    ctx.response.body = '<h1>404 Not Found</h1>'
-})
-
-// 3、调用路由中间件
-app.use(router.routes())
-
-app.listen(8080, ()=>{
-    console.log('server is running at http://localhost:8080')
-})
 ```
 
-三、拆分路由。为了便于管理将路由拆分为多个文件。
-
-1、安装glob、path、koa-compose模块:
+四、删
 ```
-cnpm install path glob koa-compose --save
-```
-2、新建routers目录，在routers目录下新建index.js,代码如下:
-```
-const compose = require('koa-compose')
-const glob = require('glob')
-const { resolve } = require('path')
-
-registerRouter = () => {
-    let routers = [];
-    // 将 与 routes同级目录controller下的.js文件解析为路由文件
-    glob.sync(resolve(__dirname,  '../controller', '**/*.js')).map(router => {
-            routers.push(require(router).routes())
-            routers.push(require(router).allowedMethods())
+router.get('/delete/:id', async (ctx, next) => {
+    let id = ctx.params.id;
+    try {
+        let result = await User.destroy({
+            where: {
+                id: id
+            }
         })
-    return compose(routers)
-}
-
-module.exports = registerRouter
-```
-将 与 routes同级目录controller下的.js文件解析为路由文件。
-3、在controller目录下新建user.js,代码如下:
-```
-const Router = require('koa-router')
-const path = require('path')
-const router = new Router()
-
-// 该路由将文件名作为路由的前缀，如这里将user作为前缀
-let prefix = path.basename(__filename)
-router.prefix('/' + prefix.substring(0, prefix.indexOf('.')))
-
-// 访问路径 http://localhost:1996/user/login
-router.get('/login',(ctx,next)=>{
-    ctx.body = "login"
+        ctx.body = '删除成功:' + JSON.stringify(result)
+    } catch (errors) {
+        console.log('errors', errors)
+        ctx.body = '删除失败:' + JSON.stringify(errors)
+    }
 })
-
-router.get('/register',(ctx,next)=>{
-    ctx.body = "register"
-})
-
-module.exports = router
 ```
-访问路径为:http://localhost:8080/user/login,http://localhost:8080/user/register
-
-4、在controller目录下新建mall目录，新建order.js文件，代码如下:
+五、更
 ```
-const Router = require('koa-router')
-const path = require('path')
-const router = new Router()
-
-// 该路由将文件名作为路由的前缀
-let prefix = path.basename(__filename)
-router.prefix('/' + prefix.substring(0, prefix.indexOf('.')))
-
-router.get('/query',(ctx,next)=>{
-    ctx.body = "query"
+router.post('/update', async (ctx, next) => {
+    let data = ctx.request.body
+    try {
+        let result = await User.update(
+            {
+                username: data.username,
+                age: data.age
+            },
+            {
+                where: {
+                    id: data.id
+                }
+            })
+        ctx.body = '更新成功:' + JSON.stringify(result)
+    } catch (errors) {
+        console.log('errors', errors)
+        ctx.body = '更新失败:' + JSON.stringify(errors)
+    }
 })
-
-router.get('/delete',(ctx,next)=>{
-    ctx.body = "delete"
-})
-
-module.exports = router
-
 ```
-访问路径为:http://localhost:8080/order/query,http://localhost:8080/order/delete
+六、查全部
+```
+router.get('/findAll', async (ctx, next) => {
+    try {
+        // 查询全部字段
+        let result = await User.findAll()
+        ctx.body = '查询成功:' + JSON.stringify(result)
+    } catch (errors) {
+        console.log('errors', errors)
+        ctx.body = '查询失败:' + JSON.stringify(errors)
+    }
+})
+```
+七、查询部分字段并加上查询条件
+```
+router.get('/findAllSome', async (ctx, next) => {
+    try {
+        // 只查询username，age字段
+        let result = await User.findAll({
+            attributes: ['username', 'age'],
+            where: {
+                id: 5
+            }
+        })
+        ctx.body = '查询成功:' + JSON.stringify(result)
+    } catch (errors) {
+        console.log('errors', errors)
+        ctx.body = '查询失败:' + JSON.stringify(errors)
+    }
+})
+```
