@@ -13,5 +13,5 @@ app.use(koaBody({
 app.use(registerRouter())
 
 app.listen(8888)
-console.log("demo in run")
+console.log("demo in run" + 8888)
 
