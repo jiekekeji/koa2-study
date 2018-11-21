@@ -1,6 +1,6 @@
 ## ORM 之 Sequelize 简单增删查改
 
-一、安装路由
+一、安装Sequelize
 ```
 cnpm install sequelize --save
 ```
